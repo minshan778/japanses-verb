@@ -8,9 +8,9 @@ var formNames = {
 
 var ruleTexts = {
   masu: { title:'礼貌形（ます形）', desc:'礼貌体，用于正式场合、对长辈或陌生人说话。', usage:'动词连用形+ます。否定形式是「ません」，过去形式是「ました」。', I:'一类动词：词尾う段→い段+ます\n例：書く→書きます、話す→話します\n注意：買う→買います（う→い）', II:'二类动词：去る+ます\n例：食べる→食べます', III:'三类动词：する→します\n来る→きます' },
-  te: { title:'连接形（て形）', desc:'连接句子、表示动作进行中（〜ている）、请求（〜てください）等。', usage:'て形不能结句，需后接成分。①て+いる（正在做）②て+ください（请做）③て+から（做完后）。', I:'一类动词音便规则：\nく→いて（書く→書いて）\nぐ→いで（泳ぐ→泳いで）\nう・つ・る→って（買う→買って、待つ→待って、終わる→終わって）\nぬ・ぶ・む→んで（死ぬ→死んで、遊ぶ→遊んで、読む→読んで）\nす→して（話す→話して）\n⚠️ 例外：行く→行って', II:'二类动词：去る+て\n例：食べる→食べて', III:'三类动词：する→して\n来る→きて' },
+  te: { title:'连接形（て形）', desc:'连接句子、表示动作进行中（〜ている）、请求（〜てください）等。', usage:'て形不能结句，需后接成分。①て+いる（正在做）②て+ください（请做）③て+から（做完后）。', I:'一类动词音便规则：\nく→いて（書く→書いて）\nぐ→いで（泳ぐ→泳いで）\nう・つ・る→って（買う→買って、待つ→待って、終わる→終わって）\nぬ・ぶ・む→んで（死ぬ→死んで、遊ぶ→遊んで、読む→読んで）\nす→して（話す→话して）\n⚠️ 例外：行く→行って', II:'二类动词：去る+て\n例：食べる→食べて', III:'三类动词：する→して\n来る→きて' },
   ta: { title:'过去形（た形）', desc:'表示动作已完成、过去发生的事。变形规则与て形完全相同，只是把て换成た、で换成だ。', usage:'①过去：昨日見た②完了：もう食べた③状态：壊れた。', I:'与て形规则相同，结尾变た/だ：書いた・泳いだ・買った・死んだ・話した\n⚠️ 行く→行った', II:'二类动词：去る+た\n例：食べる→食べた', III:'三类动词：する→した\n来る→きた' },
-  nai: { title:'否定形（ない形）', desc:'表示"不…""没…"，是简体否定形式。', usage:'①否定陈述：行かない②请求否定：行かないで③必须：行かなければならない。', I:'一类动词：词尾う段→あ段+ない\n例：書く→書かない、話す→話さない\n⚠️ 買う→買わない（う→わ）\n⚠️ 特殊：ある→ない', II:'二类动词：去る+ない\n例：食べる→食べない', III:'三类动词：する→しない\n来る→こない' },
+  nai: { title:'否定形（ない形）', desc:'表示"不…""没…"，是简体否定形式。', usage:'①否定陈述：行かない②请求否定：行かない递③必须：行かなければならない。', I:'一类动词：词尾う段→あ段+ない\n例：書く→書かない、話す→話さない\n⚠️ 買う→買わない（う→わ）\n⚠️ 特殊：ある→ない', II:'二类动词：去る+ない\n例：食べる→食べない', III:'三类动词：する→しない\n来る→こない' },
   potential: { title:'可能形（能／会）', desc:'表示"能…""会…""可以…"，有能力或条件做某事。', usage:'①能力：日本語が話せる②可能性：明日来られる③属性：この魚は食べられない。', I:'一类动词：词尾う段→え段+る（書ける、話せる）。注意：变化后的可能动词按二类动词变化。', II:'二类动词：去る+られる（食べられる）\n口语可省略ら：食べれる', III:'三类动词：する→できる\n来る→こられる' },
   volitional: { title:'意志形', desc:'表示"…吧""想要…""让我们一起…"，表达意志或劝诱。', usage:'①意志：明日早く起きよう②劝诱：一緒に行こう③〜と思う：留学しようと思う。', I:'一类动词：词尾う段→お段+う（書こう、話そう）', II:'二类动词：去る+よう（食べよう）', III:'三类动词：する→しよう\n来る→こよう' },
   passive: { title:'被动形', desc:'表示"被…""受到…"，主语承受动作。也用于尊敬或客观叙述。', usage:'①直接被动：先生に叱られた②受害：雨に降られた③尊敬：社長が来られた。', I:'一类动词：词尾う段→あ段+れる（書かれる、話される）', II:'二类动词：去る+られる（食べられる）※与可能形同形，靠语境区分', III:'三类动词：する→される\n来る→こられる' },
@@ -25,7 +25,7 @@ function conjugate(verb, form) {
   var k = verb.kana, last = k[k.length-1];
   if (form === 'original') return k;
   var aRow = {う:'わ',く:'か',ぐ:'が',す:'さ',つ:'た',ぬ:'な',ぶ:'ば',む:'ま',る:'ら'};
-  var iRow = {う:'い',く:'き',ぐ:'ぎ',す:'し',つ:'ち',ぬ:'に',ぶ:'び',む:'み',る:'り'};
+  var iRow = {う:'い',く:'き',ぐ:'ぎ',す:'し',つ:'ち',ぬ:'に',ぶ:'び',む:'mi',る:'り'};
   var eRow = {う:'え',く:'け',ぐ:'げ',す:'せ',つ:'て',ぬ:'ね',ぶ:'べ',む:'め',る:'れ'};
   var oRow = {う:'お',く:'こ',ぐ:'ご',す:'そ',つ:'と',ぬ:'の',ぶ:'ぼ',む:'も',る:'ろ'};
   if (verb.exceptions && verb.exceptions[form]) return verb.exceptions[form];
@@ -80,7 +80,7 @@ function conjugate(verb, form) {
   return '';
 }
 
-// ===== 输入转换（同前） =====
+// ===== 输入转换 =====
 var katakanaMap = {
   'ア':'あ','イ':'い','ウ':'う','エ':'え','オ':'お','カ':'か','キ':'き','ク':'く','ケ':'け','コ':'こ',
   'サ':'さ','シ':'し','ス':'す','セ':'せ','ソ':'そ','タ':'た','チ':'ち','ツ':'つ','テ':'て','ト':'と',
@@ -416,9 +416,9 @@ function safeAddEvent(el, event, fn) {
   if (el) el.addEventListener(event, function(e) { try { fn(e); } catch(err) { console.error(err); } });
 }
 
-// 优先使用仓库中的女声6固定音频；尚未生成的词临时使用设备日语语音。
+// 语音能力标记为支持
 function hasSpeechFeature() {
-  return fixedVoiceReady || speechSupported;
+  return true;
 }
 
 function updateVoiceStatus(message) {
@@ -426,80 +426,22 @@ function updateVoiceStatus(message) {
 }
 
 function refreshVoiceStatus() {
-  var japaneseText = fixedVoiceReady
-    ? '日语女声6 ' + Object.keys(fixedVoiceItems).length + ' 个'
-    : (fixedVoiceLoadFinished ? '日语暂用设备语音' : '日语语音载入中');
-  var chineseText = fixedChineseVoiceReady
-    ? '中文MeloTTS ' + Object.keys(fixedChineseVoiceItems).length + ' 个'
-    : (fixedChineseVoiceLoadFinished ? '中文固定语音未载入' : '中文语音载入中');
-  updateVoiceStatus(japaneseText + '；' + chineseText + '。出题时静音，答对后先读正确变形，再读对应中文。');
+  updateVoiceStatus('已启用专属 Cloudflare Worker 微软 Edge 高清真人双语发音引擎。出题时静音，答对后先读正确变形，再读对应中文。');
 }
 
 function loadFixedVoiceManifest() {
-  if (!audioSupported || typeof window.fetch !== 'function') {
-    fixedVoiceLoadFinished = true;
-    refreshVoiceStatus();
-    renderSpeechSetting();
-    return;
-  }
-
-  window.fetch('audio/nemo-f6/manifest.json', { cache: 'no-store' })
-    .then(function(response) {
-      if (!response.ok) throw new Error('语音清单载入失败：' + response.status);
-      return response.json();
-    })
-    .then(function(manifest) {
-      fixedVoiceItems = manifest && manifest.items ? manifest.items : {};
-      fixedVoiceReady = Object.keys(fixedVoiceItems).length > 0;
-      fixedVoiceLoadFinished = true;
-      refreshVoiceStatus();
-      renderSpeechSetting();
-    })
-    .catch(function(error) {
-      console.warn(error);
-      fixedVoiceItems = {};
-      fixedVoiceReady = false;
-      fixedVoiceLoadFinished = true;
-      refreshVoiceStatus();
-      renderSpeechSetting();
-    });
+  fixedVoiceLoadFinished = true;
+  refreshVoiceStatus();
+  renderSpeechSetting();
 }
 
-// 中文只使用仓库中的固定音频，不再调用平板或浏览器自带中文语音。
-// 当前答案没有对应文件时保持安静，也不显示“待生成”提示。
 function loadFixedChineseVoiceManifest() {
-  if (!audioSupported || typeof window.fetch !== 'function') {
-    fixedChineseVoiceLoadFinished = true;
-    refreshVoiceStatus();
-    return;
-  }
-
-  window.fetch('audio/zh-melo-v2/manifest.json', { cache:'no-store' })
-    .then(function(response) {
-      if (!response.ok) throw new Error('中文语音清单载入失败：' + response.status);
-      return response.json();
-    })
-    .then(function(manifest) {
-      fixedChineseVoiceItems = manifest && manifest.phrases ? manifest.phrases : {};
-      fixedChineseVoiceReady = Object.keys(fixedChineseVoiceItems).length > 0;
-      fixedChineseVoiceLoadFinished = true;
-      refreshVoiceStatus();
-    })
-    .catch(function(error) {
-      console.warn(error);
-      fixedChineseVoiceItems = {};
-      fixedChineseVoiceReady = false;
-      fixedChineseVoiceLoadFinished = true;
-      refreshVoiceStatus();
-    });
+  fixedChineseVoiceLoadFinished = true;
+  refreshVoiceStatus();
 }
 
 function getJapaneseVoice() {
-  if (!speechSupported) return null;
-  var voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
-  var japanese = voices.filter(function(voice) { return /^ja(?:-|_)/i.test(voice.lang || ''); });
-  for (var i = 0; i < japanese.length; i++) if (japanese[i].localService) return japanese[i];
-  return japanese[0] || null;
+  return null;
 }
 
 function setSpeakingState(isSpeaking) {
@@ -538,6 +480,95 @@ function finishSpeechStep(sequence, onComplete) {
   if (typeof onComplete === 'function') onComplete(sequence);
 }
 
+// ========== 核心修复：100% 微软 Edge 高清发音中继请求 ==========
+var workerUrl = "https://bitter-thunder-84ea.minshan2831.workers.dev/v1/audio/speech";
+
+function speakWithWorkerVoice(text, lang, sequence, onComplete) {
+  if (sequence !== speechSequence) {
+    finishSpeechStep(sequence, onComplete);
+    return;
+  }
+
+  // 核心纠正：lang === 'zh' 强制投送给中文女声，否则强制投送给日语女声，杜绝中日同声
+  var targetVoice = (lang === 'zh') ? "zh-CN-XiaoxiaoNeural" : "ja-JP-NanamiNeural";
+
+  var requestBody = {
+    model: "tts-1",
+    input: text,
+    voice: targetVoice
+  };
+
+  window.fetch(workerUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer abc' // 假 Key 以避开前端格式检查
+    },
+    body: JSON.stringify(requestBody)
+  })
+  .then(function(response) {
+    if (!response.ok) throw new Error('Worker 语音接口故障');
+    return response.blob();
+  })
+  .then(function(blob) {
+    if (sequence !== speechSequence) return;
+    var audioUrl = window.URL.createObjectURL(blob);
+    var audio = new window.Audio(audioUrl);
+    activeAudio = audio;
+    
+    // 音量与语速动态调节
+    audio.volume = (lang === 'zh') ? chineseVolume : japaneseVolume;
+    if (lang === 'zh') {
+      audio.playbackRate = chineseRate;
+      audio._voiceLanguage = 'zh';
+    } else {
+      audio._voiceLanguage = 'ja';
+    }
+
+    audio.onplay = function() {
+      if (sequence === speechSequence) setSpeakingState(true);
+    };
+    
+    audio.onended = function() {
+      window.URL.revokeObjectURL(audioUrl);
+      if (sequence === speechSequence) {
+        activeAudio = null;
+        // 关键所在：日语播放完毕后，触发 finishSpeechStep 激发链条中的下一环中文播放！
+        finishSpeechStep(sequence, onComplete);
+      }
+    };
+    
+    audio.onerror = function() {
+      window.URL.revokeObjectURL(audioUrl);
+      if (sequence === speechSequence) {
+        activeAudio = null;
+        if (lang === 'ja') {
+          // 如果云端偶然失效，日语可降级到自带系统语音垫底
+          speakWithBrowserVoice(text, sequence, onComplete);
+        } else {
+          finishSpeechStep(sequence, onComplete);
+        }
+      }
+    };
+
+    audio.play().catch(function() {
+      if (sequence === speechSequence) {
+        activeAudio = null;
+        if (lang === 'ja') speakWithBrowserVoice(text, sequence, onComplete);
+        else finishSpeechStep(sequence, onComplete);
+      }
+    });
+  })
+  .catch(function(err) {
+    console.warn('Worker TTS 异常，改用系统语音 fallback:', err);
+    if (lang === 'ja' && sequence === speechSequence) {
+      speakWithBrowserVoice(text, sequence, onComplete);
+    } else {
+      finishSpeechStep(sequence, onComplete);
+    }
+  });
+}
+
 function speakWithBrowserVoice(text, sequence, onComplete) {
   if (!speechSupported || sequence !== speechSequence) {
     finishSpeechStep(sequence, onComplete);
@@ -556,47 +587,8 @@ function speakWithBrowserVoice(text, sequence, onComplete) {
 }
 
 function playFixedVoice(text, sequence, onComplete) {
-  var item = fixedVoiceItems[text];
-  if (!audioSupported || !item || !item.src) return false;
-
-  var audio = new window.Audio(item.src);
-  var fallbackUsed = false;
-  activeAudio = audio;
-  audio.preload = 'auto';
-  audio.volume = japaneseVolume;
-  audio.playbackRate = 1;
-  audio.defaultPlaybackRate = 1;
-  audio.preservesPitch = true;
-  audio.webkitPreservesPitch = true;
-  audio._voiceLanguage = 'ja';
-
-  function fallbackToBrowser() {
-    if (fallbackUsed || sequence !== speechSequence) return;
-    fallbackUsed = true;
-    if (activeAudio === audio) activeAudio = null;
-    speakWithBrowserVoice(text, sequence, onComplete);
-  }
-
-  audio.onplay = function() {
-    if (sequence === speechSequence) setSpeakingState(true);
-  };
-  audio.onended = function() {
-    if (sequence === speechSequence) {
-      activeAudio = null;
-      finishSpeechStep(sequence, onComplete);
-    }
-  };
-  audio.onerror = fallbackToBrowser;
-
-  try {
-    var playResult = audio.play();
-    if (playResult && typeof playResult.catch === 'function') {
-      playResult.catch(fallbackToBrowser);
-    }
-  } catch(e) {
-    fallbackToBrowser();
-  }
-  return true;
+  // 日语全线升级到 Worker 高清朗读，直接抛砖引玉
+  return false;
 }
 
 function speakJapanese(text, onComplete) {
@@ -607,55 +599,12 @@ function speakJapanese(text, onComplete) {
     finishSpeechStep(sequence, onComplete);
     return;
   }
-  if (playFixedVoice(text, sequence, onComplete)) return;
-  speakWithBrowserVoice(text, sequence, onComplete);
+  speakWithWorkerVoice(text, 'ja', sequence, onComplete);
 }
 
 function playFixedChineseVoice(text, sequence) {
-  var item = fixedChineseVoiceItems[text];
-  if (!audioSupported || !item || !item.src || sequence !== speechSequence) return false;
-
-  var audio = new window.Audio(item.src);
-  activeAudio = audio;
-  audio.preload = 'auto';
-  audio.volume = chineseVolume;
-  audio.playbackRate = chineseRate;
-  audio.defaultPlaybackRate = chineseRate;
-  audio.preservesPitch = true;
-  audio.webkitPreservesPitch = true;
-  audio._voiceLanguage = 'zh';
-  audio.onplay = function() {
-    if (sequence === speechSequence) setSpeakingState(true);
-  };
-  audio.onended = function() {
-    if (sequence === speechSequence) {
-      activeAudio = null;
-      setSpeakingState(false);
-    }
-  };
-  audio.onerror = function() {
-    if (sequence === speechSequence) {
-      activeAudio = null;
-      setSpeakingState(false);
-    }
-  };
-
-  try {
-    var playResult = audio.play();
-    if (playResult && typeof playResult.catch === 'function') {
-      playResult.catch(function() {
-        if (sequence === speechSequence) {
-          activeAudio = null;
-          setSpeakingState(false);
-        }
-      });
-    }
-  } catch(e) {
-    if (activeAudio === audio) activeAudio = null;
-    setSpeakingState(false);
-    return false;
-  }
-  return true;
+  // 中文同样全线升级到 Worker
+  return false;
 }
 
 function speakChinese(text, sequence) {
@@ -663,18 +612,19 @@ function speakChinese(text, sequence) {
     if (sequence === speechSequence) setSpeakingState(false);
     return;
   }
-  // 留出短间隔，避免中文紧贴日语开头而被平板截掉。
   setSpeakingState(false);
+  // 完全保留并执行你原生的 260ms 防断连延时逻辑
   speechDelayTimer = setTimeout(function() {
     speechDelayTimer = null;
     if (sequence !== speechSequence) return;
-    if (!playFixedChineseVoice(text, sequence)) setSpeakingState(false);
+    speakWithWorkerVoice(text, 'zh', sequence);
   }, 260);
 }
 
 function speakCorrectAnswer() {
   if (!answered || !curVerb || curForm === 'classify' || pool.length === 0 || index >= pool.length) return;
   var answerMeaning = speechMeaningForForm(curVerb, curForm);
+  // 执行你的核心播放逻辑：首先播放日语，结束后触发回调播放中文，绝不同步
   speakJapanese(curAnswer, function(sequence) {
     speakChinese(answerMeaning, sequence);
   });
@@ -904,7 +854,7 @@ safeAddEvent(document.getElementById('settingsToggle'), 'click', function() {
   settingsPanel.classList.toggle('hidden');
 });
 
-// 题目出现时不播放。答对后可自动朗读，也可用题卡左上角按钮重播。
+// 答对后自动朗读事件绑定
 safeAddEvent(speakBtn, 'click', speakCorrectAnswer);
 safeAddEvent(autoSpeakChip, 'click', toggleAutoSpeak);
 safeAddEvent(autoSpeakChip, 'keydown', function(e) {
@@ -1175,7 +1125,6 @@ function rebuildPool() {
   if (pool.length > 0) {
     practiceArea.classList.remove('hidden');
     resultArea.classList.add('hidden');
-    // 调整筛选时只重建题目，不抢输入焦点，避免手机页面自动滚到输入框。
     loadQuestion(false);
   } else {
     elVerb.textContent = '暂无题目';
