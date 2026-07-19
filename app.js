@@ -369,14 +369,13 @@ function updateVoiceStatus(message) {
 }
 
 // ----------------------------------------------------
-// 【全网最强音频防拦截系统 & 可视化调试】
+// 【音频防拦截系统 & 可视化调试】
 // ----------------------------------------------------
 var globalAudio = new window.Audio();
 var audioUnlocked = false;
 var speechSequence = 0;
 var speechDelayTimer = null;
 
-// 在用户第一次触摸或点击时，强行解锁浏览器的音频锁！
 function unlockAudio() {
   if (audioUnlocked) return;
   globalAudio.src = "data:audio/mp3;base64,//OExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
@@ -441,7 +440,7 @@ function speakWithWorkerVoice(text, lang, sequence, onComplete) {
     if (sequence !== speechSequence) return;
     
     var audioUrl = window.URL.createObjectURL(blob);
-    globalAudio.src = audioUrl; // 复用解锁过的唯一通道
+    globalAudio.src = audioUrl; 
     
     globalAudio.volume = (lang === 'zh') ? chineseVolume : japaneseVolume;
     globalAudio.playbackRate = (lang === 'zh') ? chineseRate : 1.0;
@@ -495,11 +494,10 @@ function speakChinese(text, sequence) {
   if (!text || sequence !== speechSequence) return;
   if (speakBtn) speakBtn.classList.remove('speaking');
   
-  speechDelayTimer = setTimeout(function() {
-    speechDelayTimer = null;
-    if (sequence !== speechSequence) return;
-    speakWithWorkerVoice(text, 'zh', sequence);
-  }, 260); // 留点缓冲，完美避开声音重叠
+  // 【修复 1】：移除之前生硬的 260ms 人工延迟
+  // 因为向 Worker 请求接口自身会耗费约 0.2~0.3 秒的网络延迟
+  // 直接发起请求，刚好能形成极致丝滑的 0.3 秒听觉间隔，杜绝拖沓。
+  speakWithWorkerVoice(text, 'zh', sequence);
 }
 
 function speakCorrectAnswer() {
@@ -539,7 +537,7 @@ function renderAudioControls() {
 }
 
 function updateActiveAudioLevel() {
-  // 简化的调节，下次发声生效
+  // 下次发声生效即可
 }
 
 function verbMetaText(verb) {
@@ -1013,7 +1011,6 @@ function checkAns() {
     elInfo.classList.remove('hidden');
     answered = true;
     renderSpeechSetting();
-    // 只有非分类题型才发音
     if (autoSpeak && !isClassify) {
       speakCorrectAnswer();
     }
@@ -1032,12 +1029,15 @@ function checkAns() {
       saveMem(); saveErrLog();
     }
     questionHadError = true;
-    elMsg.innerHTML = '<span class="red">✘ 错误，正确答案：' + escapeHtml(isClassify ? classificationText(curVerb) : displayCorrectAnswer(curVerb, curAnswer)) + '<br>请重新回答正确答案</span>';
+    elMsg.innerHTML = '<span class="red">✘ 错误，正确答案：' + escapeHtml(isClassify ? classificationText(curVerb) : displayCorrectAnswer(curVerb, curAnswer)) + '<br>请直接重新输入</span>';
     if (isClassify) {
       selectedClassType = ''; selectedClassTrans = '';
       document.querySelectorAll('#classifyArea .chip').forEach(function(c){c.classList.remove('on');});
     } else {
-      elAns.className = 'wrong'; elAns.value = ''; focusAnswerWithoutScroll();
+      elAns.className = 'wrong'; 
+      elAns.value = ''; 
+      elAns.disabled = false; // 强力重置，确保不被意外锁定
+      focusAnswerWithoutScroll();
     }
     elSub.textContent = '重试';
     answered = false;
@@ -1072,6 +1072,22 @@ safeAddEvent(document.getElementById('resetBtn'), 'click', function() {
   practiceArea.classList.remove('hidden');
   resultArea.classList.add('hidden');
   rebuildPool();
+});
+
+// 【修复 2】：彻底解决手机端错误后输入框卡死的体验 Bug
+// 监听输入框状态，只要用户重新点击或开始打字，立刻自动清除报错红框，恢复最佳纯净输入状态
+safeAddEvent(elAns, 'focus', function() {
+  if (elAns.classList.contains('wrong')) {
+    elAns.classList.remove('wrong');
+  }
+});
+safeAddEvent(elAns, 'input', function() {
+  if (elAns.classList.contains('wrong')) {
+    elAns.classList.remove('wrong');
+  }
+  if (questionHadError && !answered) {
+    elMsg.innerHTML = ''; // 开始打字就自动清空下方错误提示，体验更流畅
+  }
 });
 
 renderAudioControls();
