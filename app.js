@@ -413,7 +413,7 @@ function showAudioDebug(errorMsg) {
 }
 
 // 中继发音核心逻辑
-var workerUrl = "https://bitter-thunder-84ea.minshan2831.workers.dev/v1/audio/speech";
+var workerUrl = "https://holy-silence-088a.minshan2831.workers.dev/v1/audio/speech";
 
 function speakWithWorkerVoice(text, lang, sequence, onComplete) {
   if (sequence !== speechSequence) return;
