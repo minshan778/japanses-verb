@@ -140,7 +140,6 @@ function normalizeInput(input) {
   return str;
 }
 
-// 保留汉字或假名原样比较，并统一全角、空格和片假名。
 function normalizePlain(input) {
   var str = (input || '').normalize('NFKC').replace(/[\s　]/g, '');
   return str.replace(/[ァ-ヶ]/g, function(ch) { return String.fromCharCode(ch.charCodeAt(0) - 0x60); });
@@ -361,70 +360,63 @@ var chineseVolumeValue = document.getElementById('chineseVolumeValue');
 var chineseRateInput = document.getElementById('chineseRate');
 var chineseRateValue = document.getElementById('chineseRateValue');
 
-var speechSequence = 0;
-var activeAudio = null;
-var speechDelayTimer = null;
-
 function safeAddEvent(el, event, fn) {
   if (el) el.addEventListener(event, function(e) { try { fn(e); } catch(err) { console.error(err); } });
 }
-
-// 永远支持语音
-function hasSpeechFeature() { return true; }
 
 function updateVoiceStatus(message) {
   if (voiceStatus) voiceStatus.textContent = message;
 }
 
-function refreshVoiceStatus() {
-  updateVoiceStatus('✅ 已启用 Cloudflare Worker 微软双语真人发音引擎。答对后先读日语，再读中文。');
-}
+// ----------------------------------------------------
+// 【全网最强音频防拦截系统 & 可视化调试】
+// ----------------------------------------------------
+var globalAudio = new window.Audio();
+var audioUnlocked = false;
+var speechSequence = 0;
+var speechDelayTimer = null;
 
-function setSpeakingState(isSpeaking) {
-  if (!speakBtn) return;
-  speakBtn.classList.toggle('speaking', !!isSpeaking);
-  speakBtn.setAttribute('aria-label', isSpeaking ? '正在朗读' : '朗读');
+// 在用户第一次触摸或点击时，强行解锁浏览器的音频锁！
+function unlockAudio() {
+  if (audioUnlocked) return;
+  globalAudio.src = "data:audio/mp3;base64,//OExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
+  globalAudio.play().then(function() {
+    globalAudio.pause();
+  }).catch(function() {});
+  audioUnlocked = true;
 }
+document.addEventListener('click', unlockAudio, { once: true });
+document.addEventListener('touchstart', unlockAudio, { once: true });
 
 function stopActivePlayback() {
   if (speechDelayTimer !== null) {
     clearTimeout(speechDelayTimer);
     speechDelayTimer = null;
   }
-  if (activeAudio) {
-    activeAudio.onplay = null;
-    activeAudio.onended = null;
-    activeAudio.onerror = null;
-    try {
-      activeAudio.pause();
-      activeAudio.currentTime = 0;
-    } catch(e) {}
-    activeAudio = null;
-  }
+  try {
+    globalAudio.pause();
+    globalAudio.currentTime = 0;
+  } catch(e) {}
 }
 
 function stopSpeech() {
   speechSequence++;
   stopActivePlayback();
-  setSpeakingState(false);
+  if (speakBtn) speakBtn.classList.remove('speaking');
 }
 
-function finishSpeechStep(sequence, onComplete) {
-  if (sequence !== speechSequence) return;
-  setSpeakingState(false);
-  if (typeof onComplete === 'function') onComplete(sequence);
+function showAudioDebug(errorMsg) {
+  var errorSpan = document.createElement('div');
+  errorSpan.style = "color:#d9534f; font-size:0.75rem; margin-top:6px; font-weight:normal; text-align:center; padding: 4px; background: #fae3e3; border-radius: 6px;";
+  errorSpan.innerText = "🔇 语音报错: " + errorMsg;
+  elMsg.appendChild(errorSpan);
 }
 
-// ========== 彻底修复的双语 Worker 语音引擎 ==========
+// 中继发音核心逻辑
 var workerUrl = "https://bitter-thunder-84ea.minshan2831.workers.dev/v1/audio/speech";
 
 function speakWithWorkerVoice(text, lang, sequence, onComplete) {
-  if (sequence !== speechSequence) {
-    finishSpeechStep(sequence, onComplete);
-    return;
-  }
-
-  // 严格区分语言：中文用晓晓，日语用七海，绝不会错乱
+  if (sequence !== speechSequence) return;
   var targetVoice = (lang === 'zh') ? "zh-CN-XiaoxiaoNeural" : "ja-JP-NanamiNeural";
 
   var requestBody = {
@@ -442,51 +434,53 @@ function speakWithWorkerVoice(text, lang, sequence, onComplete) {
     body: JSON.stringify(requestBody)
   })
   .then(function(response) {
-    if (!response.ok) throw new Error('Worker 语音接口故障');
+    if (!response.ok) throw new Error('Worker 连接失败 (' + response.status + ')');
     return response.blob();
   })
   .then(function(blob) {
     if (sequence !== speechSequence) return;
+    
     var audioUrl = window.URL.createObjectURL(blob);
-    var audio = new window.Audio(audioUrl);
-    activeAudio = audio;
+    globalAudio.src = audioUrl; // 复用解锁过的唯一通道
     
-    audio.volume = (lang === 'zh') ? chineseVolume : japaneseVolume;
-    if (lang === 'zh') {
-      audio.playbackRate = chineseRate;
-    }
+    globalAudio.volume = (lang === 'zh') ? chineseVolume : japaneseVolume;
+    globalAudio.playbackRate = (lang === 'zh') ? chineseRate : 1.0;
+    globalAudio.defaultPlaybackRate = globalAudio.playbackRate;
 
-    audio.onplay = function() {
-      if (sequence === speechSequence) setSpeakingState(true);
+    globalAudio.onplay = function() {
+      if (sequence === speechSequence && speakBtn) speakBtn.classList.add('speaking');
     };
     
-    audio.onended = function() {
+    globalAudio.onended = function() {
       window.URL.revokeObjectURL(audioUrl);
       if (sequence === speechSequence) {
-        activeAudio = null;
-        // 日语读完后，触发回调（进入下面 speakChinese 环节）
-        finishSpeechStep(sequence, onComplete);
+        if (speakBtn) speakBtn.classList.remove('speaking');
+        if (typeof onComplete === 'function') onComplete(sequence);
       }
     };
     
-    audio.onerror = function() {
+    globalAudio.onerror = function() {
       window.URL.revokeObjectURL(audioUrl);
       if (sequence === speechSequence) {
-        activeAudio = null;
-        finishSpeechStep(sequence, onComplete);
+        if (speakBtn) speakBtn.classList.remove('speaking');
+        showAudioDebug("播放被拦截 (Autoplay Blocked)");
+        if (typeof onComplete === 'function') onComplete(sequence);
       }
     };
 
-    audio.play().catch(function() {
+    globalAudio.play().catch(function(err) {
       if (sequence === speechSequence) {
-        activeAudio = null;
-        finishSpeechStep(sequence, onComplete);
+        if (speakBtn) speakBtn.classList.remove('speaking');
+        showAudioDebug("播放错误 (" + err.message + ")");
+        if (typeof onComplete === 'function') onComplete(sequence);
       }
     });
   })
   .catch(function(err) {
-    console.warn('发音失败:', err);
-    finishSpeechStep(sequence, onComplete);
+    if (sequence === speechSequence) {
+      showAudioDebug("网络错误 (" + err.message + ")");
+      if (typeof onComplete === 'function') onComplete(sequence);
+    }
   });
 }
 
@@ -498,24 +492,20 @@ function speakJapanese(text, onComplete) {
 }
 
 function speakChinese(text, sequence) {
-  if (!text || sequence !== speechSequence) {
-    if (sequence === speechSequence) setSpeakingState(false);
-    return;
-  }
-  setSpeakingState(false);
-  // 保留延迟，防止两段声音挤在一起
+  if (!text || sequence !== speechSequence) return;
+  if (speakBtn) speakBtn.classList.remove('speaking');
+  
   speechDelayTimer = setTimeout(function() {
     speechDelayTimer = null;
     if (sequence !== speechSequence) return;
     speakWithWorkerVoice(text, 'zh', sequence);
-  }, 260);
+  }, 260); // 留点缓冲，完美避开声音重叠
 }
 
-// 核心播放控制：先播放日语，回调里触发播放中文
 function speakCorrectAnswer() {
   if (!answered || !curVerb || curForm === 'classify' || pool.length === 0 || index >= pool.length) return;
   var answerMeaning = speechMeaningForForm(curVerb, curForm);
-  // 完美顺序：日语 -> 完成后 -> 中文
+  // 执行播放：先日文，完事后再中文
   speakJapanese(curAnswer, function(sequence) {
     speakChinese(answerMeaning, sequence);
   });
@@ -528,8 +518,7 @@ function renderSpeechSetting() {
   if (speakBtn) {
     var canReplay = answered && curForm !== 'classify';
     speakBtn.disabled = !canReplay;
-    speakBtn.title = canReplay ? '重播正确变形日语和中文' : '答对后可重播日语和中文';
-    speakBtn.setAttribute('aria-label', canReplay ? '重播正确变形日语和中文' : '答对后可重播日语和中文');
+    speakBtn.title = canReplay ? '重播声音' : '答对后重播';
   }
 }
 
@@ -550,8 +539,7 @@ function renderAudioControls() {
 }
 
 function updateActiveAudioLevel() {
-  if (!activeAudio) return;
-  // 直接根据当前音频对象进行简单调整即可，不过一般滑块变动下一次发声生效最佳
+  // 简化的调节，下次发声生效
 }
 
 function verbMetaText(verb) {
@@ -599,8 +587,6 @@ function markScopeCustom() {
   document.querySelectorAll('.entry-card').forEach(function(card) { card.classList.remove('on'); });
   presetNote.textContent = '自定义筛选：已按你当前选择的词频、考试重要度和变形价值出题。';
 }
-
-// ========== 彻底删除了 voice-test 相关的多余逻辑 ==========
 
 function applyEntryPreset(entry) {
   applyingPreset = true;
@@ -1090,6 +1076,6 @@ safeAddEvent(document.getElementById('resetBtn'), 'click', function() {
 
 renderAudioControls();
 renderSpeechSetting();
-refreshVoiceStatus();
+updateVoiceStatus('✅ 已启用云端双语发音（含防静音机制）');
 applyEntryPreset('daily');
 elOk.textContent = okTotal; elNg.textContent = ngTotal; elRate.textContent = '-';
