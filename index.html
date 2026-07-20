@@ -1,88 +1,139 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>动词变形练习 · 全功能版</title>
-  <link rel="stylesheet" href="style.css?v=audio-logic-1">
+  <meta name="theme-color" content="#eee5e1">
+  <title>动词变形练习</title>
+  <link rel="stylesheet" href="style.css?v=sakura-menu-1">
 </head>
 <body>
-<div class="container">
-  <h2>📘 动词变形练习</h2>
-  
-  <div class="label" style="display:flex;justify-content:space-between">
-    <span>📊 全局掌握</span><span id="globalProgressText">0/0</span>
-  </div>
-  <div class="global-bar-wrap"><div class="global-bar" id="globalProgressBar"></div></div>
-  <div class="bar-wrap"><div class="bar" id="progressBar"></div></div>
+<div class="sakura-background" aria-hidden="true">
+  <span class="sakura-branch branch-one"></span>
+  <span class="sakura-branch branch-two"></span>
+  <span class="blossom blossom-one">✿</span>
+  <span class="blossom blossom-two">✿</span>
+  <span class="blossom blossom-three">✿</span>
+  <span class="blossom blossom-four">✿</span>
+  <span class="blossom blossom-five">✿</span>
+  <span class="falling-petal petal-one"></span>
+  <span class="falling-petal petal-two"></span>
+  <span class="falling-petal petal-three"></span>
+</div>
 
-  <div class="entry-title"><span>选择练习入口</span><span>初稿测试版</span></div>
+<div class="menu-overlay" id="menuOverlay" aria-hidden="true"></div>
+
+<aside class="side-drawer left-drawer" id="entryDrawer" aria-hidden="true" aria-labelledby="entryDrawerTitle" inert>
+  <div class="drawer-header">
+    <div>
+      <span class="drawer-kicker">PRACTICE</span>
+      <h2 id="entryDrawerTitle">选择练习入口</h2>
+    </div>
+    <button type="button" class="drawer-close" id="closeEntryDrawer" aria-label="关闭练习入口">×</button>
+  </div>
+
   <div class="entry-grid" id="entryGrid">
     <button type="button" class="entry-card on" data-entry="daily">
-      <span class="entry-icon">🌿</span><strong>日常核心</strong><small>常用词 × 常用变形</small>
+      <span class="entry-icon">日</span>
+      <span class="entry-copy"><strong>日常核心</strong><small>常用词 × 常用变形</small></span>
+      <span class="entry-arrow">›</span>
     </button>
     <button type="button" class="entry-card" data-entry="jlpt">
-      <span class="entry-icon">🎯</span><strong>JLPT重点</strong><small>重点词 × 考试保留形</small>
+      <span class="entry-icon">考</span>
+      <span class="entry-copy"><strong>JLPT重点</strong><small>重点词 × 考试保留形</small></span>
+      <span class="entry-arrow">›</span>
     </button>
     <button type="button" class="entry-card" data-entry="forms">
-      <span class="entry-icon">🧩</span><strong>变形专项</strong><small>按等级与变形筛选</small>
+      <span class="entry-icon">形</span>
+      <span class="entry-copy"><strong>变形专项</strong><small>按等级与变形筛选</small></span>
+      <span class="entry-arrow">›</span>
     </button>
     <button type="button" class="entry-card" data-entry="mistakes">
-      <span class="entry-icon">🔥</span><strong>错题强化</strong><small>集中重练错误组合</small>
+      <span class="entry-icon">错</span>
+      <span class="entry-copy"><strong>错题强化</strong><small>集中重练错误组合</small></span>
+      <span class="entry-arrow">›</span>
     </button>
   </div>
+
   <div class="preset-note" id="presetNote">日常核心：先练已标记的常用词和常用变形。</div>
-  
-  <div class="label">练习方式</div>
-  <div class="mode-row">
-    <div class="mode-btn on" data-mode="new">新单词</div>
-    <div class="mode-btn" data-mode="review">复习</div>
-    <div class="mode-btn" data-mode="error">错题</div>
-    <div class="mode-btn" data-mode="classify">动词区分</div>
+</aside>
+
+<aside class="side-drawer right-drawer" id="toolsDrawer" aria-hidden="true" aria-labelledby="toolsDrawerTitle" inert>
+  <div class="drawer-header">
+    <div>
+      <span class="drawer-kicker">OPTIONS</span>
+      <h2 id="toolsDrawerTitle">练习与设置</h2>
+    </div>
+    <button type="button" class="drawer-close" id="closeToolsDrawer" aria-label="关闭练习设置">×</button>
   </div>
 
+  <section class="drawer-section">
+    <div class="section-title">练习方式</div>
+    <div class="mode-row">
+      <button type="button" class="mode-btn on" data-mode="new">新单词</button>
+      <button type="button" class="mode-btn" data-mode="review">复习</button>
+      <button type="button" class="mode-btn" data-mode="error">错题</button>
+      <button type="button" class="mode-btn" data-mode="classify">动词区分</button>
+    </div>
+  </section>
+
   <div class="top-actions">
-    <button class="btn-small" id="settingsToggle">⚙️ 练习设置</button>
-    <button class="btn-small" id="errBookBtn">📋 错题本</button>
+    <button type="button" class="btn-small" id="settingsToggle" aria-controls="settingsPanel" aria-expanded="false">
+      <span class="action-icon">筛</span>
+      <span><strong>筛选条件</strong><small>难度、变形与语音</small></span>
+    </button>
+    <button type="button" class="btn-small" id="errBookBtn">
+      <span class="action-icon">错</span>
+      <span><strong>错题本</strong><small>查看与集中重练</small></span>
+    </button>
   </div>
 
   <div class="collapsible hidden" id="settingsPanel">
-    <div class="label">日常使用频率（可多选）</div>
+    <div class="settings-heading">
+      <span>详细筛选</span>
+      <small>可多选，选择后立即生效</small>
+    </div>
+
+    <div class="label">日常使用频率</div>
     <div class="chip-row" id="usageChips">
       <span class="chip on" data-usage="high">常用</span>
       <span class="chip on" data-usage="normal">一般</span>
       <span class="chip" data-usage="low">不常用</span>
       <span class="chip" data-usage="pending">待补充</span>
     </div>
-    <div class="label">JLPT重要度（初稿，可多选）</div>
+
+    <div class="label">JLPT重要度</div>
     <div class="chip-row" id="examChips">
       <span class="chip on" data-exam="focus">考试重点</span>
       <span class="chip on" data-exam="common">考试常见</span>
       <span class="chip on" data-exam="supplement">补充词</span>
       <span class="chip on" data-exam="pending">待补充</span>
     </div>
-    <div class="label">变形练习价值（可多选）</div>
+
+    <div class="label">变形练习价值</div>
     <div class="chip-row" id="formStatusChips">
       <span class="chip on" data-form-status="core">常用变形</span>
       <span class="chip" data-form-status="exam">考试保留</span>
       <span class="chip" data-form-status="rare">低频变形</span>
     </div>
     <div class="pilot-note" id="pilotNote">初稿只标记一部分代表词；未标记内容显示“待补充”。</div>
-    <div class="label">变形种类（可多选）</div>
+
+    <div class="label">变形种类</div>
     <div class="chip-row" id="formChips">
       <span class="chip on" data-form="masu">礼貌形（ます）</span>
       <span class="chip on" data-form="te">て形（连接）</span>
       <span class="chip on" data-form="ta">た形（过去）</span>
       <span class="chip on" data-form="nai">ない形（否定）</span>
-      <span class="chip on" data-form="potential">可能</span>
-      <span class="chip on" data-form="volitional">意志</span>
+      <span class="chip on" data-form="potential">可能形</span>
+      <span class="chip on" data-form="volitional">意志形</span>
       <span class="chip on" data-form="passive">被动形</span>
-      <span class="chip on" data-form="causative">使役态</span>
+      <span class="chip on" data-form="causative">使役形</span>
       <span class="chip on" data-form="ba">假定形（ば）</span>
-      <span class="chip on" data-form="imperative">命令</span>
+      <span class="chip on" data-form="imperative">命令形</span>
       <span class="chip on" data-form="causativePassive">使役被动形</span>
       <span class="chip on" data-form="prohibition">禁止形（な）</span>
     </div>
+
     <div class="label">难度</div>
     <div class="chip-row" id="levelChips">
       <span class="chip on" data-level="N5">N5</span>
@@ -90,36 +141,41 @@
       <span class="chip on" data-level="N3">N3</span>
       <span class="chip on" data-level="N2">N2</span>
     </div>
-    <div class="label">活用分类（可多选）</div>
+
+    <div class="label">活用分类</div>
     <div class="chip-row" id="typeChips">
       <span class="chip on" data-type="I">一类动词</span>
       <span class="chip on" data-type="II">二类动词</span>
       <span class="chip on" data-type="III">三类动词</span>
     </div>
-    <div class="label">自他分类（可多选）</div>
+
+    <div class="label">自他分类</div>
     <div class="chip-row" id="transChips">
       <span class="chip on" data-trans="vi">自动词</span>
       <span class="chip on" data-trans="vt">他动词</span>
     </div>
+
     <div class="label">答对后的语音</div>
     <div class="chip-row" id="speechChips">
-      <span class="chip on" id="autoSpeakChip" role="button" tabindex="0" aria-pressed="true">🔊 答对后自动朗读</span>
+      <button type="button" class="chip chip-button on" id="autoSpeakChip" aria-pressed="true">答对后自动朗读</button>
     </div>
-    <div class="voice-controls" aria-label="语音音量和语速设置">
-      <label class="voice-control" for="japaneseVolume">
-        <span>日语音量 <output id="japaneseVolumeValue">85%</output></span>
+
+    <div class="voice-controls" role="group" aria-label="语音音量和语速设置">
+      <div class="voice-control">
+        <div class="voice-control-copy"><label for="japaneseVolume">日语音量</label><output id="japaneseVolumeValue" for="japaneseVolume">85%</output></div>
         <input id="japaneseVolume" type="range" min="0" max="100" step="5" value="85">
-      </label>
-      <label class="voice-control" for="chineseVolume">
-        <span>中文音量 <output id="chineseVolumeValue">100%</output></span>
+      </div>
+      <div class="voice-control">
+        <div class="voice-control-copy"><label for="chineseVolume">中文音量</label><output id="chineseVolumeValue" for="chineseVolume">100%</output></div>
         <input id="chineseVolume" type="range" min="0" max="100" step="5" value="100">
-      </label>
-      <label class="voice-control" for="chineseRate">
-        <span>中文语速 <output id="chineseRateValue">0.88×</output></span>
+      </div>
+      <div class="voice-control">
+        <div class="voice-control-copy"><label for="chineseRate">中文语速</label><output id="chineseRateValue" for="chineseRate">0.88×</output></div>
         <input id="chineseRate" type="range" min="0.70" max="1.05" step="0.01" value="0.88">
-      </label>
+      </div>
     </div>
     <div class="pilot-note" id="voiceStatus">正在载入日语和中文固定语音…</div>
+
     <div class="label">每轮数量</div>
     <div class="chip-row" id="numChips">
       <span class="chip on" data-num="10">10</span>
@@ -129,67 +185,115 @@
     </div>
     <div class="filter-summary" id="filterSummary">正在计算当前范围…</div>
   </div>
+</aside>
 
-  <div id="practiceArea">
-    <div class="card">
-      <button type="button" class="speak-btn" id="speakBtn" title="答对后可重播日语和中文" aria-label="答对后重播日语和中文" disabled>🔊</button>
-      <button class="rule-btn" id="ruleBtn" title="变形规则">📖</button>
-      <div class="verb" id="verb"></div>
-      <div class="kana" id="kana"></div>
-      <div class="question-tags" id="verbTags"></div>
-      <div class="form-badge" id="form"></div>
-      <div class="rule-box hidden" id="ruleBox"></div>
-    </div>
-    <div class="collapsible hidden" id="classifyArea">
-      <div class="label">选择活用分类</div>
-      <div class="chip-row" id="classTypeAnswers">
-        <span class="chip" data-answer-type="I">一类动词</span>
-        <span class="chip" data-answer-type="II">二类动词</span>
-        <span class="chip" data-answer-type="III">三类动词</span>
-      </div>
-      <div class="label">选择自他分类</div>
-      <div class="chip-row" id="classTransAnswers">
-        <span class="chip" data-answer-trans="vi">自动词</span>
-        <span class="chip" data-answer-trans="vt">他动词</span>
-      </div>
-    </div>
-    <input type="text" id="answer" placeholder="">
-    <div class="msg" id="msg"></div>
-    <div class="btn-row">
-      <button id="submitBtn">决定</button>
-      <button id="nextBtn" class="next hidden">下一题</button>
-    </div>
-    <div id="resultInfo" class="hidden">
-      <div class="info" id="meaning"></div>
-      <div class="example" id="example"></div>
-    </div>
-    <div class="stats">
-      <span>✅ <span id="ok">0</span></span>
-      <span>❌ <span id="ng">0</span></span>
-      <span>首次正确率 <span id="rate">-</span>%</span>
-    </div>
-  </div>
+<div class="container">
+  <header class="app-header">
+    <button type="button" class="menu-button hamburger-button" id="leftMenuBtn" aria-label="打开练习入口" aria-controls="entryDrawer" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
 
-  <div id="resultArea" class="hidden">
-    <div class="result-box">
-      <h3>🎉 本轮完成</h3>
-      <p id="resultText"></p>
+    <div class="title-block">
+      <span class="eyebrow">日本語トレーニング</span>
+      <h1>动词变形练习</h1>
+      <p id="activePracticeLabel">日常核心 · 新单词</p>
     </div>
-    <button id="retryBtn" style="width:100%;margin-bottom:6px">同样条件再来一组</button>
-    <button id="resetBtn" style="width:100%;background:white;border:1px solid #ccc">返回设置</button>
-  </div>
+
+    <button type="button" class="menu-button kebab-button" id="rightMenuBtn" aria-label="打开练习设置" aria-controls="toolsDrawer" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <section class="progress-panel" aria-label="练习进度">
+    <div class="progress-copy">
+      <span>全局掌握</span>
+      <strong id="globalProgressText">0/0</strong>
+    </div>
+    <div class="global-bar-wrap"><div class="global-bar" id="globalProgressBar"></div></div>
+    <div class="round-progress-row">
+      <span>本轮进度</span>
+      <span id="roundProgressText">0/0</span>
+    </div>
+    <div class="bar-wrap"><div class="bar" id="progressBar"></div></div>
+  </section>
+
+  <main class="practice-main">
+    <div id="practiceArea">
+      <section class="card question-card">
+        <span class="card-watermark" aria-hidden="true">桜</span>
+        <button type="button" class="speak-btn" id="speakBtn" title="答对后可重播日语和中文" aria-label="答对后重播日语和中文" disabled>♪</button>
+        <button type="button" class="rule-btn" id="ruleBtn" title="变形规则" aria-label="查看变形规则">规则</button>
+        <div class="question-kicker">请写出正确变形</div>
+        <div class="verb" id="verb"></div>
+        <div class="kana" id="kana"></div>
+        <div class="question-tags" id="verbTags"></div>
+        <div class="form-badge" id="form"></div>
+        <div class="rule-box hidden" id="ruleBox"></div>
+      </section>
+
+      <section class="collapsible classify-panel hidden" id="classifyArea">
+        <div class="label">选择活用分类</div>
+        <div class="chip-row" id="classTypeAnswers">
+          <span class="chip" data-answer-type="I">一类动词</span>
+          <span class="chip" data-answer-type="II">二类动词</span>
+          <span class="chip" data-answer-type="III">三类动词</span>
+        </div>
+        <div class="label">选择自他分类</div>
+        <div class="chip-row" id="classTransAnswers">
+          <span class="chip" data-answer-trans="vi">自动词</span>
+          <span class="chip" data-answer-trans="vt">他动词</span>
+        </div>
+      </section>
+
+      <div class="answer-zone">
+        <label class="sr-only" for="answer">输入答案</label>
+        <input type="text" id="answer" placeholder="在这里输入答案" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <div class="msg" id="msg" aria-live="polite"></div>
+        <div class="btn-row">
+          <button type="button" id="submitBtn">确认答案</button>
+          <button type="button" id="nextBtn" class="next hidden">下一题</button>
+        </div>
+      </div>
+
+      <div id="resultInfo" class="result-info hidden">
+        <div class="info" id="meaning"></div>
+        <div class="example" id="example"></div>
+      </div>
+
+      <div class="stats" role="group" aria-label="本轮答题统计">
+        <span><small>正确</small><strong><span id="ok">0</span></strong></span>
+        <span><small>错误</small><strong><span id="ng">0</span></strong></span>
+        <span><small>首次正确率</small><strong><span id="rate">-</span>%</strong></span>
+      </div>
+    </div>
+
+    <div id="resultArea" class="hidden">
+      <div class="result-box">
+        <span class="result-flower">✿</span>
+        <h3>本轮完成</h3>
+        <p id="resultText"></p>
+      </div>
+      <button type="button" id="retryBtn" class="wide-button">同样条件再来一组</button>
+      <button type="button" id="resetBtn" class="wide-button secondary-button">返回练习</button>
+    </div>
+  </main>
 </div>
 
-<div class="modal hidden" id="errModal">
+<div class="modal hidden" id="errModal" role="dialog" aria-modal="true" aria-labelledby="errModalTitle">
   <div class="modal-box">
-    <h3>📋 错题本</h3>
+    <div class="modal-header">
+      <div>
+        <span class="drawer-kicker">REVIEW</span>
+        <h3 id="errModalTitle">错题本</h3>
+      </div>
+      <button type="button" class="drawer-close" id="closeErrBtn" aria-label="关闭错题本">×</button>
+    </div>
     <div id="errList"></div>
-    <button id="closeErrBtn" style="width:100%;margin-top:8px">关闭</button>
-    <button id="clearErrBtn" style="width:100%;background:#fae3e3;margin-top:4px">清空错题</button>
+    <button type="button" id="clearErrBtn" class="wide-button danger-button">清空错题</button>
   </div>
 </div>
 
 <script src="verbs.js?v=audio-logic-1"></script>
-<script src="app.js?v=audio-logic-1"></script>
+<script src="app.js?v=sakura-menu-1"></script>
 </body>
 </html>

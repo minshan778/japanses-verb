@@ -359,9 +359,101 @@ var chineseVolumeInput = document.getElementById('chineseVolume');
 var chineseVolumeValue = document.getElementById('chineseVolumeValue');
 var chineseRateInput = document.getElementById('chineseRate');
 var chineseRateValue = document.getElementById('chineseRateValue');
+var roundProgressText = document.getElementById('roundProgressText');
+var activePracticeLabel = document.getElementById('activePracticeLabel');
+var leftMenuBtn = document.getElementById('leftMenuBtn');
+var rightMenuBtn = document.getElementById('rightMenuBtn');
+var entryDrawer = document.getElementById('entryDrawer');
+var toolsDrawer = document.getElementById('toolsDrawer');
+var menuOverlay = document.getElementById('menuOverlay');
+var closeEntryDrawerBtn = document.getElementById('closeEntryDrawer');
+var closeToolsDrawerBtn = document.getElementById('closeToolsDrawer');
+var settingsToggle = document.getElementById('settingsToggle');
 
 function safeAddEvent(el, event, fn) {
   if (el) el.addEventListener(event, function(e) { try { fn(e); } catch(err) { console.error(err); } });
+}
+
+// ===== 左右抽屉菜单 =====
+var lastMenuTrigger = null;
+
+function updateMenuChrome() {
+  var leftOpen = !!(entryDrawer && entryDrawer.classList.contains('is-open'));
+  var rightOpen = !!(toolsDrawer && toolsDrawer.classList.contains('is-open'));
+  var anyOpen = leftOpen || rightOpen;
+  if (leftMenuBtn) leftMenuBtn.setAttribute('aria-expanded', leftOpen ? 'true' : 'false');
+  if (rightMenuBtn) rightMenuBtn.setAttribute('aria-expanded', rightOpen ? 'true' : 'false');
+  if (entryDrawer) {
+    entryDrawer.setAttribute('aria-hidden', leftOpen ? 'false' : 'true');
+    if (leftOpen) entryDrawer.removeAttribute('inert');
+    else entryDrawer.setAttribute('inert', '');
+  }
+  if (toolsDrawer) {
+    toolsDrawer.setAttribute('aria-hidden', rightOpen ? 'false' : 'true');
+    if (rightOpen) toolsDrawer.removeAttribute('inert');
+    else toolsDrawer.setAttribute('inert', '');
+  }
+  if (menuOverlay) {
+    menuOverlay.classList.toggle('is-visible', anyOpen);
+    menuOverlay.setAttribute('aria-hidden', anyOpen ? 'false' : 'true');
+  }
+  document.body.classList.toggle('menu-open', anyOpen);
+}
+
+function closeAllMenus(restoreFocus) {
+  if (typeof restoreFocus === 'undefined') restoreFocus = true;
+  if (entryDrawer) entryDrawer.classList.remove('is-open');
+  if (toolsDrawer) toolsDrawer.classList.remove('is-open');
+  updateMenuChrome();
+  if (restoreFocus && lastMenuTrigger && typeof lastMenuTrigger.focus === 'function') {
+    lastMenuTrigger.focus({preventScroll:true});
+  }
+}
+
+function openMenu(drawer, trigger, focusTarget) {
+  var willOpen = drawer && !drawer.classList.contains('is-open');
+  closeAllMenus(false);
+  if (!willOpen || !drawer) return;
+  lastMenuTrigger = trigger;
+  drawer.classList.add('is-open');
+  updateMenuChrome();
+  if (focusTarget) window.setTimeout(function() { focusTarget.focus({preventScroll:true}); }, 180);
+}
+
+safeAddEvent(leftMenuBtn, 'click', function() {
+  openMenu(entryDrawer, leftMenuBtn, closeEntryDrawerBtn);
+});
+safeAddEvent(rightMenuBtn, 'click', function() {
+  openMenu(toolsDrawer, rightMenuBtn, closeToolsDrawerBtn);
+});
+safeAddEvent(closeEntryDrawerBtn, 'click', function() { closeAllMenus(true); });
+safeAddEvent(closeToolsDrawerBtn, 'click', function() { closeAllMenus(true); });
+safeAddEvent(menuOverlay, 'click', function() { closeAllMenus(true); });
+safeAddEvent(document, 'keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (errModal && !errModal.classList.contains('hidden')) errModal.classList.add('hidden');
+    closeAllMenus(true);
+  }
+});
+
+document.querySelectorAll('.entry-card').forEach(function(card) {
+  safeAddEvent(card, 'click', function() { closeAllMenus(true); });
+});
+
+safeAddEvent(document.getElementById('errBookBtn'), 'click', function() { closeAllMenus(false); });
+
+function updateHeaderContext() {
+  if (!activePracticeLabel) return;
+  var entryLabels = {
+    daily:'日常核心', jlpt:'JLPT重点', forms:'变形专项', mistakes:'错题强化', custom:'自定义筛选'
+  };
+  var modeLabels = {new:'新单词', review:'复习', error:'错题', classify:'动词区分'};
+  activePracticeLabel.textContent = (entryLabels[activeEntry] || '自定义筛选') + ' · ' + (modeLabels[mode] || '练习');
+}
+
+function syncSettingsToggle() {
+  if (!settingsToggle || !settingsPanel) return;
+  settingsToggle.setAttribute('aria-expanded', settingsPanel.classList.contains('hidden') ? 'false' : 'true');
 }
 
 function updateVoiceStatus(message) {
@@ -577,6 +669,7 @@ function setModeButtons(nextMode) {
   document.querySelectorAll('.mode-btn').forEach(function(btn) {
     btn.classList.toggle('on', btn.dataset.mode === nextMode);
   });
+  updateHeaderContext();
 }
 
 function markScopeCustom() {
@@ -584,6 +677,7 @@ function markScopeCustom() {
   activeEntry = 'custom';
   document.querySelectorAll('.entry-card').forEach(function(card) { card.classList.remove('on'); });
   presetNote.textContent = '自定义筛选：已按你当前选择的词频、考试重要度和变形价值出题。';
+  updateHeaderContext();
 }
 
 function applyEntryPreset(entry) {
@@ -636,6 +730,8 @@ function applyEntryPreset(entry) {
   setChipValues('#typeChips', 'type', types);
   setChipValues('#transChips', 'trans', transTypes);
   applyingPreset = false;
+  updateHeaderContext();
+  syncSettingsToggle();
   rebuildPool();
 }
 
@@ -691,8 +787,9 @@ document.querySelectorAll('.entry-card').forEach(function(card) {
 });
 
 // 折叠设置
-safeAddEvent(document.getElementById('settingsToggle'), 'click', function() {
+safeAddEvent(settingsToggle, 'click', function() {
   settingsPanel.classList.toggle('hidden');
+  syncSettingsToggle();
 });
 
 // 答对后自动朗读事件绑定
@@ -761,6 +858,7 @@ document.querySelectorAll('.mode-btn').forEach(function(btn) {
     btn.classList.add('on');
     mode = btn.dataset.mode;
     if ((activeEntry === 'mistakes' && mode !== 'error')) markScopeCustom();
+    updateHeaderContext();
     rebuildPool();
   });
 });
@@ -868,6 +966,7 @@ function retryErrItem(i) {
     if (verbs[j].kanji === e.verb) {
       mode = 'error';
       document.querySelectorAll('.mode-btn').forEach(function(b){b.classList.toggle('on', b.dataset.mode === 'error');});
+      updateHeaderContext();
       pool = [{verb:verbs[j], form:e.form}]; index = 0;
       okTotal = 0; ngTotal = 0;
       errModal.classList.add('hidden'); practiceArea.classList.remove('hidden'); resultArea.classList.add('hidden');
@@ -936,8 +1035,13 @@ function rebuildPool() {
 }
 
 function updateProgress() {
-  if (pool.length === 0) prog.style.width = '0%';
-  else prog.style.width = Math.round((index / pool.length) * 100) + '%';
+  if (pool.length === 0) {
+    prog.style.width = '0%';
+    if (roundProgressText) roundProgressText.textContent = '0/0';
+  } else {
+    prog.style.width = Math.round((index / pool.length) * 100) + '%';
+    if (roundProgressText) roundProgressText.textContent = Math.min(index + 1, pool.length) + '/' + pool.length;
+  }
 }
 
 function focusAnswerWithoutScroll() {
@@ -1056,6 +1160,8 @@ function showResult() {
   resultArea.classList.remove('hidden');
   var total = pool.length;
   var rate = total ? Math.round((okTotal / total) * 100) : 0;
+  prog.style.width = total ? '100%' : '0%';
+  if (roundProgressText) roundProgressText.textContent = total + '/' + total;
   resultText.textContent = '共 ' + total + ' 题，首次答对 ' + okTotal + ' 题，首次正确率 ' + rate + '%';
 }
 
@@ -1092,6 +1198,7 @@ safeAddEvent(elAns, 'input', function() {
 
 renderAudioControls();
 renderSpeechSetting();
+syncSettingsToggle();
 updateVoiceStatus('✅ 已启用云端双语发音（含防静音机制）');
 applyEntryPreset('daily');
 elOk.textContent = okTotal; elNg.textContent = ngTotal; elRate.textContent = '-';
