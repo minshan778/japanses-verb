@@ -322,7 +322,6 @@ var selectedClassTrans = '';
 
 // DOM
 var prog = document.getElementById('progressBar');
-var globalProg = document.getElementById('globalProgressBar');
 var globalProgText = document.getElementById('globalProgressText');
 var elVerb = document.getElementById('verb');
 var elKana = document.getElementById('kana');
@@ -987,8 +986,7 @@ function updateGlobalProgress() {
       if (mem[key]) practiced++;
     }
   });
-  globalProgText.textContent = practiced + '/' + total;
-  globalProg.style.width = total ? Math.round((practiced / total) * 100) + '%' : '0%';
+  if (globalProgText) globalProgText.textContent = practiced + '/' + total;
 }
 
 function rebuildPool() {
@@ -1053,6 +1051,7 @@ function loadQuestion(autoFocus) {
   if (typeof autoFocus === 'undefined') autoFocus = true;
   if (index >= pool.length) { showResult(); return; }
   stopSpeech();
+  practiceArea.classList.remove('answer-correct');
   var item = pool[index];
   curVerb = item.verb; curForm = item.form;
   curAnswer = curForm === 'classify' ? curVerb.type + '|' + getTransitivity(curVerb) : conjugate(curVerb, curForm);
@@ -1114,6 +1113,7 @@ function checkAns() {
     elExam.textContent = isClassify ? '📎 分类：' + classificationText(curVerb) : '📎 例：' + (curVerb.example || curVerb.kanji + 'の' + formNames[curForm] + 'は ' + curAnswer + ' です');
     elInfo.classList.remove('hidden');
     answered = true;
+    practiceArea.classList.add('answer-correct');
     renderSpeechSetting();
     if (autoSpeak && !isClassify) {
       speakCorrectAnswer();
