@@ -1047,6 +1047,27 @@ function focusAnswerWithoutScroll() {
   catch(e) { elAns.focus(); }
 }
 
+function rearmAnswerInput() {
+  if (!elAns) return;
+  elAns.disabled = false;
+  elAns.readOnly = false;
+  elAns.removeAttribute('disabled');
+  elAns.removeAttribute('readonly');
+  elAns.value = '';
+  elAns.classList.remove('hidden');
+  elAns.classList.add('wrong');
+  focusAnswerWithoutScroll();
+
+  // 安卓浏览器点击按钮后可能在事件结束时抢走焦点，下一帧再次交还给输入框。
+  window.requestAnimationFrame(function() {
+    focusAnswerWithoutScroll();
+    try { elAns.setSelectionRange(0, 0); } catch(e) {}
+  });
+  window.setTimeout(function() {
+    if (!answered && curForm !== 'classify') focusAnswerWithoutScroll();
+  }, 80);
+}
+
 function loadQuestion(autoFocus) {
   if (typeof autoFocus === 'undefined') autoFocus = true;
   if (index >= pool.length) { showResult(); return; }
@@ -1069,7 +1090,7 @@ function loadQuestion(autoFocus) {
     if (autoFocus) focusAnswerWithoutScroll();
     else elAns.blur();
   }
-  elMsg.innerHTML = ''; elSub.style.display = ''; elSub.textContent = '决定';
+  elMsg.innerHTML = ''; elSub.style.display = ''; elSub.textContent = '确认答案';
   elNext.classList.add('hidden'); elInfo.classList.add('hidden'); ruleBox.classList.add('hidden');
   answered = false;
   questionHadError = false;
@@ -1138,12 +1159,9 @@ function checkAns() {
       selectedClassType = ''; selectedClassTrans = '';
       document.querySelectorAll('#classifyArea .chip').forEach(function(c){c.classList.remove('on');});
     } else {
-      elAns.className = 'wrong'; 
-      elAns.value = ''; 
-      elAns.disabled = false; // 强力重置，确保不被意外锁定
-      focusAnswerWithoutScroll();
+      rearmAnswerInput();
     }
-    elSub.textContent = '重试';
+    elSub.textContent = '确认答案';
     answered = false;
   }
   elOk.textContent = okTotal; elNg.textContent = ngTotal;

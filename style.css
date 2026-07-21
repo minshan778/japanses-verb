@@ -321,22 +321,25 @@ button{color:inherit}
   transition:margin .4s ease,transform .4s ease;
 }
 
+.question-tags{display:none!important}
+
 .form-badge{
   position:relative;
   z-index:1;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-height:34px;
-  margin:10px 0 0;
-  padding:5px 18px;
-  border:1.5px solid #c5aaa9;
-  border-radius:10px 18px 10px 18px;
-  background:#e6d3d5;
-  color:#5f4046;
-  font-size:.86rem;
-  font-weight:800;
-  transition:min-height .4s ease,margin .4s ease,padding .4s ease,font-size .4s ease,transform .4s ease;
+  display:block;
+  width:100%;
+  margin:0 0 12px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:#b33f59;
+  font-size:clamp(2.7rem,9vw,4.1rem);
+  font-weight:900;
+  line-height:1.13;
+  letter-spacing:.035em;
+  text-shadow:0 2px 0 rgba(255,255,255,.58);
+  word-break:break-word;
+  transition:margin .4s ease,font-size .42s cubic-bezier(.22,.75,.25,1),transform .42s ease,color .25s ease;
 }
 
 /* 答对后的聚焦状态：题卡收拢，下面的答案内容顺势上移。 */
@@ -359,8 +362,8 @@ button{color:inherit}
 
 #practiceArea.answer-correct .verb{font-size:clamp(2.18rem,7vw,3rem);transform:translateY(-2px)}
 #practiceArea.answer-correct .kana{margin:3px auto 0;font-size:.7rem}
-#practiceArea.answer-correct .question-tags{margin:5px 0 0;transform:scale(.96)}
-#practiceArea.answer-correct .form-badge{min-height:29px;margin-top:5px;padding:3px 14px;font-size:.76rem;transform:scale(.97)}
+#practiceArea.answer-correct .question-tags{margin:0;transform:scale(.96)}
+#practiceArea.answer-correct .form-badge{margin-bottom:5px;font-size:clamp(2.18rem,7vw,3rem);transform:translateY(-2px)}
 #practiceArea.answer-correct .card-watermark{font-size:3.7rem;opacity:.75;transform:rotate(-8deg) scale(.92)}
 #practiceArea.answer-correct .answer-zone{animation:correct-content-rise .48s .04s cubic-bezier(.22,.75,.25,1) both}
 #practiceArea.answer-correct .result-info{animation:correct-result-rise .5s .1s cubic-bezier(.22,.75,.25,1) both}
@@ -931,15 +934,15 @@ button:focus-visible,.chip:focus-visible,input:focus-visible,[role="button"]:foc
   .question-card{min-height:264px;padding:52px 12px 25px;border-radius:20px 20px 31px 20px}
   #practiceArea.answer-correct .question-card{min-height:184px;margin-bottom:-17px;padding:37px 11px 14px}
   #practiceArea.answer-correct .verb{font-size:clamp(2rem,10vw,2.55rem)}
+  #practiceArea.answer-correct .form-badge{margin-bottom:4px;font-size:clamp(2rem,10vw,2.55rem)}
   #practiceArea.answer-correct .kana{font-size:.64rem}
   #practiceArea.answer-correct .meta-tag{min-height:19px;padding:2px 6px;font-size:.53rem}
-  #practiceArea.answer-correct .form-badge{min-height:27px;font-size:.7rem}
   .question-kicker{margin-bottom:10px;font-size:.64rem}
   .verb{font-size:clamp(2.5rem,14vw,3.5rem)}
+  .form-badge{margin-bottom:9px;font-size:clamp(2.5rem,14vw,3.5rem)}
   .kana{font-size:.72rem}
   .question-tags{gap:4px;margin-top:8px}
   .meta-tag{min-height:21px;padding:3px 7px;font-size:.57rem}
-  .form-badge{min-height:32px;margin-top:8px;font-size:.79rem}
   .speak-btn,.rule-btn{top:12px;height:36px}
   .speak-btn{left:12px;width:36px}.rule-btn{right:12px;min-width:51px}
   #answer{min-height:54px;margin-top:11px;font-size:1.1rem}
@@ -967,10 +970,11 @@ button:focus-visible,.chip:focus-visible,input:focus-visible,[role="button"]:foc
   .question-card{min-height:330px;padding:64px 30px 36px}
   #practiceArea.answer-correct .question-card{min-height:224px;margin-bottom:-20px;padding:46px 28px 20px}
   #practiceArea.answer-correct .verb{font-size:3.1rem}
+  #practiceArea.answer-correct .form-badge{font-size:3.1rem}
   .question-kicker{font-size:.75rem}
   .verb{font-size:4.2rem}
+  .form-badge{font-size:4.2rem}
   .kana{font-size:.9rem}
-  .form-badge{font-size:.94rem;padding:6px 21px}
   #answer{min-height:62px;font-size:1.35rem}
   .btn-row button{min-height:54px;font-size:.96rem}
   .stats small{font-size:.68rem}.stats strong{font-size:.95rem}
@@ -994,9 +998,10 @@ button:focus-visible,.chip:focus-visible,input:focus-visible,[role="button"]:foc
   .question-card{min-height:175px;padding:39px 14px 12px}
   #practiceArea.answer-correct .question-card{min-height:132px;margin-bottom:-14px;padding:29px 12px 8px;transform:translateY(-5px) scale(.99)}
   #practiceArea.answer-correct .verb{font-size:1.85rem}
+  #practiceArea.answer-correct .form-badge{font-size:1.85rem}
   .question-kicker{display:none}
-  .verb{font-size:2.4rem}.kana{margin:2px auto;font-size:.65rem}
-  .question-tags{margin:4px 0 0}.form-badge{min-height:27px;margin-top:4px;padding:3px 14px;font-size:.72rem}
+  .verb,.form-badge{font-size:2.4rem}.form-badge{margin-bottom:4px}.kana{margin:2px auto;font-size:.65rem}
+  .question-tags{margin:4px 0 0}
   .speak-btn,.rule-btn{top:8px;height:30px}.speak-btn{width:30px}.rule-btn{min-width:46px}
   #answer{min-height:42px;margin:5px 0 3px;padding:5px;font-size:1rem}
   .msg{min-height:20px;margin:0;font-size:.7rem}.btn-row button{min-height:38px;padding:5px}
