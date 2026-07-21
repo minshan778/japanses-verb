@@ -934,12 +934,12 @@ button:focus-visible,.chip:focus-visible,input:focus-visible,[role="button"]:foc
   .question-card{min-height:264px;padding:52px 12px 25px;border-radius:20px 20px 31px 20px}
   #practiceArea.answer-correct .question-card{min-height:184px;margin-bottom:-17px;padding:37px 11px 14px}
   #practiceArea.answer-correct .verb{font-size:clamp(2rem,10vw,2.55rem)}
-  #practiceArea.answer-correct .form-badge{margin-bottom:4px;font-size:clamp(2rem,10vw,2.55rem)}
+  #practiceArea.answer-correct .form-badge{margin-bottom:4px;font-size:clamp(1.35rem,6vw,1.7rem);line-height:1.2}
   #practiceArea.answer-correct .kana{font-size:.64rem}
   #practiceArea.answer-correct .meta-tag{min-height:19px;padding:2px 6px;font-size:.53rem}
   .question-kicker{margin-bottom:10px;font-size:.64rem}
   .verb{font-size:clamp(2.5rem,14vw,3.5rem)}
-  .form-badge{margin-bottom:9px;font-size:clamp(2.5rem,14vw,3.5rem)}
+  .form-badge{margin-bottom:9px;font-size:clamp(1.55rem,7vw,2rem);line-height:1.2}
   .kana{font-size:.72rem}
   .question-tags{gap:4px;margin-top:8px}
   .meta-tag{min-height:21px;padding:3px 7px;font-size:.57rem}
@@ -998,9 +998,9 @@ button:focus-visible,.chip:focus-visible,input:focus-visible,[role="button"]:foc
   .question-card{min-height:175px;padding:39px 14px 12px}
   #practiceArea.answer-correct .question-card{min-height:132px;margin-bottom:-14px;padding:29px 12px 8px;transform:translateY(-5px) scale(.99)}
   #practiceArea.answer-correct .verb{font-size:1.85rem}
-  #practiceArea.answer-correct .form-badge{font-size:1.85rem}
+  #practiceArea.answer-correct .form-badge{font-size:1.35rem}
   .question-kicker{display:none}
-  .verb,.form-badge{font-size:2.4rem}.form-badge{margin-bottom:4px}.kana{margin:2px auto;font-size:.65rem}
+  .verb{font-size:2.4rem}.form-badge{margin-bottom:4px;font-size:1.55rem;line-height:1.18}.kana{margin:2px auto;font-size:.65rem}
   .question-tags{margin:4px 0 0}
   .speak-btn,.rule-btn{top:8px;height:30px}.speak-btn{width:30px}.rule-btn{min-width:46px}
   #answer{min-height:42px;margin:5px 0 3px;padding:5px;font-size:1rem}

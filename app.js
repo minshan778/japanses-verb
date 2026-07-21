@@ -1134,6 +1134,7 @@ function checkAns() {
     elExam.textContent = isClassify ? '📎 分类：' + classificationText(curVerb) : '📎 例：' + (curVerb.example || curVerb.kanji + 'の' + formNames[curForm] + 'は ' + curAnswer + ' です');
     elInfo.classList.remove('hidden');
     answered = true;
+    if (!isClassify) elAns.blur();
     practiceArea.classList.add('answer-correct');
     renderSpeechSetting();
     if (autoSpeak && !isClassify) {
@@ -1183,7 +1184,24 @@ function showResult() {
   resultText.textContent = '共 ' + total + ' 题，首次答对 ' + okTotal + ' 题，首次正确率 ' + rate + '%';
 }
 
-safeAddEvent(elSub, 'click', checkAns);
+// iOS 内置浏览器会在按钮获得焦点时先关闭软键盘，并拦截随后由脚本执行的 focus()。
+// 在 touchstart 阶段完成判定并阻止按钮抢焦点：答错时输入框与键盘保持原位，答对时再主动 blur。
+var lastTouchSubmitAt = 0;
+if (elSub) {
+  elSub.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    lastTouchSubmitAt = Date.now();
+    checkAns();
+  }, {passive:false});
+}
+safeAddEvent(elSub, 'click', function(e) {
+  // touchstart 已经处理过时，忽略浏览器随后生成的模拟 click，避免重复判定。
+  if (Date.now() - lastTouchSubmitAt < 800) {
+    e.preventDefault();
+    return;
+  }
+  checkAns();
+});
 safeAddEvent(elNext, 'click', nextQ);
 safeAddEvent(elAns, 'keydown', function(e) {
   if (e.key === 'Enter') {
