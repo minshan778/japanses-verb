@@ -1068,10 +1068,79 @@ function rearmAnswerInput() {
   }, 80);
 }
 
+// 手机软键盘收起时会连续改变可视区域高度。等视口稳定后再开始收拢题卡，
+// 避免键盘动画和页面动画同时重排而造成下方区域闪烁。
+var correctRevealVersion = 0;
+var correctRevealCleanup = null;
+
+function cancelPendingCorrectReveal() {
+  correctRevealVersion++;
+  if (correctRevealCleanup) {
+    correctRevealCleanup();
+    correctRevealCleanup = null;
+  }
+}
+
+function scheduleCorrectReveal(isClassify) {
+  cancelPendingCorrectReveal();
+  var version = correctRevealVersion;
+  var viewport = window.visualViewport;
+  var settleTimer = null;
+  var fallbackTimer = null;
+  var finished = false;
+
+  function cleanup() {
+    if (settleTimer !== null) window.clearTimeout(settleTimer);
+    if (fallbackTimer !== null) window.clearTimeout(fallbackTimer);
+    if (viewport) {
+      viewport.removeEventListener('resize', waitForSettle);
+      viewport.removeEventListener('scroll', waitForSettle);
+    }
+  }
+
+  function reveal() {
+    if (finished || version !== correctRevealVersion) return;
+    finished = true;
+    cleanup();
+    correctRevealCleanup = null;
+    practiceArea.classList.add('answer-correct');
+    window.requestAnimationFrame(function() {
+      if (version === correctRevealVersion) elInfo.classList.remove('hidden');
+    });
+  }
+
+  function waitForSettle() {
+    if (settleTimer !== null) window.clearTimeout(settleTimer);
+    settleTimer = window.setTimeout(reveal, 110);
+  }
+
+  correctRevealCleanup = function() {
+    finished = true;
+    cleanup();
+  };
+
+  if (isClassify) {
+    reveal();
+    return;
+  }
+
+  elAns.blur();
+  if (!viewport) {
+    settleTimer = window.setTimeout(reveal, 140);
+    return;
+  }
+
+  viewport.addEventListener('resize', waitForSettle);
+  viewport.addEventListener('scroll', waitForSettle);
+  settleTimer = window.setTimeout(reveal, 320);
+  fallbackTimer = window.setTimeout(reveal, 560);
+}
+
 function loadQuestion(autoFocus) {
   if (typeof autoFocus === 'undefined') autoFocus = true;
   if (index >= pool.length) { showResult(); return; }
   stopSpeech();
+  cancelPendingCorrectReveal();
   practiceArea.classList.remove('answer-correct');
   var item = pool[index];
   curVerb = item.verb; curForm = item.form;
@@ -1132,10 +1201,9 @@ function checkAns() {
     elSub.style.display = 'none'; elNext.classList.remove('hidden');
     elMean.innerHTML = renderMeaningHtml(curVerb, curForm);
     elExam.textContent = isClassify ? '📎 分类：' + classificationText(curVerb) : '📎 例：' + (curVerb.example || curVerb.kanji + 'の' + formNames[curForm] + 'は ' + curAnswer + ' です');
-    elInfo.classList.remove('hidden');
+    elInfo.classList.add('hidden');
     answered = true;
-    if (!isClassify) elAns.blur();
-    practiceArea.classList.add('answer-correct');
+    scheduleCorrectReveal(isClassify);
     renderSpeechSetting();
     if (autoSpeak && !isClassify) {
       speakCorrectAnswer();
