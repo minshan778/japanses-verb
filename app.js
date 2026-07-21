@@ -331,6 +331,7 @@ var elAns = document.getElementById('answer');
 var elMsg = document.getElementById('msg');
 var elSub = document.getElementById('submitBtn');
 var elNext = document.getElementById('nextBtn');
+var answerForm = document.getElementById('answerForm');
 var elInfo = document.getElementById('resultInfo');
 var elMean = document.getElementById('meaning');
 var elExam = document.getElementById('example');
@@ -1263,19 +1264,58 @@ if (elSub) {
   }, {passive:false});
 }
 safeAddEvent(elSub, 'click', function(e) {
+  e.preventDefault();
   // touchstart 已经处理过时，忽略浏览器随后生成的模拟 click，避免重复判定。
   if (Date.now() - lastTouchSubmitAt < 800) {
-    e.preventDefault();
     return;
   }
   checkAns();
 });
 safeAddEvent(elNext, 'click', nextQ);
-safeAddEvent(elAns, 'keydown', function(e) {
-  if (e.key === 'Enter') {
-    if (!elNext.classList.contains('hidden')) nextQ();
-    else checkAns();
+
+// 平板浏览器的回车可能表现为 keydown、表单 submit 或 beforeinput。
+// 三条路径统一到一个入口，并用短时间去重，避免一次回车提交两次。
+var answerIsComposing = false;
+var lastKeyboardActionAt = 0;
+
+function isEnterKeyEvent(e) {
+  return e.key === 'Enter' || e.code === 'Enter' || e.code === 'NumpadEnter' || e.keyCode === 13 || e.which === 13;
+}
+
+function runKeyboardAnswerAction(e) {
+  if (e && typeof e.preventDefault === 'function') e.preventDefault();
+  if (answerIsComposing || (e && e.isComposing)) return;
+  if (e && e.keyCode === 229 && e.key !== 'Enter' && e.code !== 'Enter' && e.code !== 'NumpadEnter') return;
+  if (!practiceArea || practiceArea.classList.contains('hidden')) return;
+  if (resultArea && !resultArea.classList.contains('hidden')) return;
+  var now = Date.now();
+  if (now - lastKeyboardActionAt < 260) return;
+  lastKeyboardActionAt = now;
+  if (!elNext.classList.contains('hidden')) nextQ();
+  else checkAns();
+}
+
+safeAddEvent(elAns, 'compositionstart', function() {
+  answerIsComposing = true;
+});
+safeAddEvent(elAns, 'compositionend', function() {
+  answerIsComposing = false;
+});
+safeAddEvent(elAns, 'beforeinput', function(e) {
+  if (e.inputType === 'insertLineBreak' || e.inputType === 'insertParagraph') {
+    runKeyboardAnswerAction(e);
   }
+});
+safeAddEvent(answerForm, 'submit', function(e) {
+  runKeyboardAnswerAction(e);
+});
+safeAddEvent(document, 'keydown', function(e) {
+  if (!isEnterKeyEvent(e) || e.repeat) return;
+  var target = e.target;
+  var targetIsPage = target === document.body || target === document.documentElement;
+  var inAnswerContext = target === elAns || target === elNext || (!elNext.classList.contains('hidden') && targetIsPage);
+  if (!inAnswerContext) return;
+  runKeyboardAnswerAction(e);
 });
 safeAddEvent(document.getElementById('retryBtn'), 'click', function() { rebuildPool(); });
 safeAddEvent(document.getElementById('resetBtn'), 'click', function() {
