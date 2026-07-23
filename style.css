@@ -302,14 +302,54 @@ button{color:inherit}
   transition:font-size .42s cubic-bezier(.22,.75,.25,1),transform .42s ease;
 }
 
+.verb-meta-row{
+  position:relative;
+  z-index:1;
+  min-height:26px;
+  margin:7px 0 2px;
+}
+
+.verb-meta-toggle{
+  position:absolute;
+  top:0;
+  left:0;
+  z-index:2;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:26px;
+  height:26px;
+  padding:0;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:rgba(255,255,255,.42);
+  color:var(--muted);
+  box-shadow:0 3px 8px rgba(81,59,61,.07);
+  font-size:1rem;
+  font-weight:800;
+  line-height:1;
+  cursor:pointer;
+  transition:border-color .2s ease,background .2s ease,color .2s ease,transform .15s ease;
+}
+
+.verb-meta-toggle:hover,
+.verb-meta-toggle[aria-expanded="true"]{
+  border-color:var(--sakura-soft);
+  background:var(--sakura-pale);
+  color:var(--sakura-deep);
+}
+
+.verb-meta-toggle:active{transform:scale(.94)}
+
 .kana{
   position:relative;
   z-index:1;
-  margin:8px auto 2px;
+  margin:0 auto;
+  padding:3px 36px 0;
   color:var(--muted);
   font-size:.79rem;
   line-height:1.55;
-  transition:font-size .4s ease,margin .4s ease,opacity .3s ease;
+  transition:font-size .4s ease,opacity .3s ease;
 }
 
 .question-tags{
@@ -363,7 +403,9 @@ button{color:inherit}
 }
 
 #practiceArea.answer-correct .verb{font-size:clamp(2.18rem,7vw,3rem);transform:translateY(-2px)}
-#practiceArea.answer-correct .kana{margin:3px auto 0;font-size:.7rem}
+#practiceArea.answer-correct .verb-meta-row{min-height:22px;margin:3px 0 0}
+#practiceArea.answer-correct .verb-meta-toggle{width:22px;height:22px;border-radius:7px;font-size:.84rem}
+#practiceArea.answer-correct .kana{padding-top:1px;font-size:.7rem}
 #practiceArea.answer-correct .question-tags{margin:0;transform:scale(.96)}
 #practiceArea.answer-correct .form-badge{margin-bottom:5px;font-size:clamp(2.18rem,7vw,3rem);transform:translateY(-2px)}
 #practiceArea.answer-correct .card-watermark{font-size:3.7rem;opacity:.75;transform:rotate(-8deg) scale(.92)}
@@ -928,6 +970,8 @@ button:focus-visible,.chip:focus-visible,input:focus-visible,[role="button"]:foc
   .question-kicker{margin-bottom:10px;font-size:.64rem}
   .verb{font-size:clamp(2.5rem,14vw,3.5rem)}
   .form-badge{margin-bottom:9px;font-size:clamp(1.55rem,7vw,2rem);line-height:1.2}
+  .verb-meta-row{margin-top:5px}
+  .verb-meta-toggle{width:25px;height:25px}
   .kana{font-size:.72rem}
   .question-tags{gap:4px;margin-top:8px}
   .meta-tag{min-height:21px;padding:3px 7px;font-size:.57rem}
@@ -988,7 +1032,7 @@ button:focus-visible,.chip:focus-visible,input:focus-visible,[role="button"]:foc
   #practiceArea.answer-correct .verb{font-size:1.85rem}
   #practiceArea.answer-correct .form-badge{font-size:1.35rem}
   .question-kicker{display:none}
-  .verb{font-size:2.4rem}.form-badge{margin-bottom:4px;font-size:1.55rem;line-height:1.18}.kana{margin:2px auto;font-size:.65rem}
+  .verb{font-size:2.4rem}.form-badge{margin-bottom:4px;font-size:1.55rem;line-height:1.18}.verb-meta-row{min-height:22px;margin:2px 0 0}.verb-meta-toggle{width:22px;height:22px;border-radius:7px;font-size:.84rem}.kana{padding-top:1px;font-size:.65rem}
   .question-tags{margin:4px 0 0}
   .speak-btn,.rule-btn{top:8px;height:30px}.speak-btn{width:30px}.rule-btn{min-width:46px}
   #answer{min-height:42px;margin:5px 0 3px;padding:5px;font-size:1rem}

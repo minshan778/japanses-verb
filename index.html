@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#eee5e1">
   <title>动词变形练习</title>
-  <link rel="stylesheet" href="style.css?v=sakura-menu-7">
+  <link rel="stylesheet" href="style.css?v=sakura-menu-8">
 </head>
 <body>
 <div class="sakura-background" aria-hidden="true">
@@ -228,7 +228,10 @@
         <button type="button" class="rule-btn" id="ruleBtn" title="变形规则" aria-label="查看变形规则">规则</button>
         <div class="form-badge" id="form"></div>
         <div class="verb" id="verb"></div>
-        <div class="kana" id="kana"></div>
+        <div class="verb-meta-row">
+          <button type="button" class="verb-meta-toggle" id="verbMetaToggle" aria-controls="kana" aria-expanded="false" aria-label="显示读音和动词类型" title="显示读音和动词类型">＋</button>
+          <div class="kana hidden" id="kana"></div>
+        </div>
         <div class="question-tags hidden" id="verbTags"></div>
         <div class="rule-box hidden" id="ruleBox"></div>
       </section>
@@ -296,6 +299,6 @@
 </div>
 
 <script src="verbs.js?v=audio-logic-1"></script>
-<script src="app.js?v=sakura-menu-7"></script>
+<script src="app.js?v=sakura-menu-8"></script>
 </body>
 </html>

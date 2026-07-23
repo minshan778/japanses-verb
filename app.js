@@ -325,6 +325,7 @@ var prog = document.getElementById('progressBar');
 var globalProgText = document.getElementById('globalProgressText');
 var elVerb = document.getElementById('verb');
 var elKana = document.getElementById('kana');
+var verbMetaToggle = document.getElementById('verbMetaToggle');
 var elForm = document.getElementById('form');
 var elVerbTags = document.getElementById('verbTags');
 var elAns = document.getElementById('answer');
@@ -372,6 +373,15 @@ var settingsToggle = document.getElementById('settingsToggle');
 
 function safeAddEvent(el, event, fn) {
   if (el) el.addEventListener(event, function(e) { try { fn(e); } catch(err) { console.error(err); } });
+}
+
+function setVerbMetaVisible(visible) {
+  if (!verbMetaToggle || !elKana) return;
+  elKana.classList.toggle('hidden', !visible);
+  verbMetaToggle.setAttribute('aria-expanded', visible ? 'true' : 'false');
+  verbMetaToggle.setAttribute('aria-label', visible ? '隐藏读音和动词类型' : '显示读音和动词类型');
+  verbMetaToggle.title = visible ? '隐藏读音和动词类型' : '显示读音和动词类型';
+  verbMetaToggle.textContent = visible ? '−' : '＋';
 }
 
 // ===== 左右抽屉菜单 =====
@@ -794,6 +804,9 @@ safeAddEvent(settingsToggle, 'click', function() {
 
 // 答对后自动朗读事件绑定
 safeAddEvent(speakBtn, 'click', speakCorrectAnswer);
+safeAddEvent(verbMetaToggle, 'click', function() {
+  setVerbMetaVisible(verbMetaToggle.getAttribute('aria-expanded') !== 'true');
+});
 safeAddEvent(autoSpeakChip, 'click', toggleAutoSpeak);
 safeAddEvent(autoSpeakChip, 'keydown', function(e) {
   if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleAutoSpeak(); }
@@ -1148,6 +1161,7 @@ function loadQuestion(autoFocus) {
   curAnswer = curForm === 'classify' ? curVerb.type + '|' + getTransitivity(curVerb) : conjugate(curVerb, curForm);
   elVerb.textContent = curVerb.kanji;
   elKana.textContent = curForm === 'classify' ? '（' + curVerb.kana + (curVerb.exceptions ? ' · 特殊变化' : '') + '）' : verbMetaText(curVerb);
+  setVerbMetaVisible(false);
   renderVerbTags(curVerb, curForm);
   elForm.textContent = formNames[curForm];
   selectedClassType = ''; selectedClassTrans = '';
